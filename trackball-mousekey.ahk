@@ -69,6 +69,7 @@ return
 $a:: 
     if(_guiVisible) {
         _lbuttonDown := false
+        _rbuttonDown := false
         Send, {LButton}
         if(_lockGui = false) {
             GoSub, HideGui 
@@ -78,11 +79,23 @@ $a::
     }
 return
 
+$q:: 
+    if(_guiVisible) {
+        _lbuttonDown := false
+        _rbuttonDown := false
+        Send, {LButton 2}
+        if(_lockGui = false) {
+            GoSub, HideGui 
+        }
+    } else {
+        Send, {q}
+    }
+return
+
 $y:: 
     if(_guiVisible) {
         if(_lbuttonDown = false) {
             Send, {LButton Down}
-            Send, {RButton Up}
             _lbuttonDown := true
             _rbuttonDown := false
         } else {
@@ -97,7 +110,6 @@ return
 $c:: 
     if(_guiVisible) {
         if(_rbuttonDown = false) {
-            Send, {LButton Up}
             Send, {RButton Down}
             _rbuttonDown := true
             _lbuttonDown := false
@@ -109,6 +121,7 @@ $c::
         Send, {c}
     }
 return
+
 $s:: 
     if(_guiVisible) {
         Send, {MButton}
@@ -145,16 +158,6 @@ $f::
     }
 return
 
-
-$q:: 
-    if(_guiVisible) {
-        Send, {WheelUp}
-        _gui_tick := 0
-    } else {
-        Send, {q}
-    }
-return
-
 $w:: 
     if(_guiVisible) {
         Send, {WheelUp}
@@ -170,15 +173,6 @@ $e::
         _gui_tick := 0
     } else {
         Send, {e}
-    }
-return
-
-$r:: 
-    if(_guiVisible) {
-        Send, {WheelDown}
-        _gui_tick := 0
-    } else {
-        Send, {r}
     }
 return
 

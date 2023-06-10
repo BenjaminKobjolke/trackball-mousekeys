@@ -8,11 +8,12 @@ As soon as you move the trackball a yellow circle will show up around your mouse
 
 While the circle is visible you can press the following keys to trigger mouse actions:
 
+- q: double left click
 - a: left mouse click
 - s: middle mouse click
 - d: right mouse click
-- q,w: mouse wheel up
-- e,r: mouse wheel down
+- w: mouse wheel up
+- r: mouse wheel down
 - y: left mouse down / up (useful for dragging)
 - c: right mouse down / up (useful for dragging)
 

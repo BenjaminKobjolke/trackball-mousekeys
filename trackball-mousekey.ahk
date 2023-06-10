@@ -1,4 +1,4 @@
-#Requires AutoHotkey v1
+
 #Include %A_ScriptDir%\config.ahk
 #Include, %A_ScriptDir%/libraries/MouseDelta.ahk
 
@@ -6,6 +6,8 @@ _guiVisible := false
 _guiTriggered := false
 _gui_tick := 0
 _lockGui := false
+_lbuttonDown := false
+_rbuttonDown := false
 
 CoordMode, Mouse, Screen
 
@@ -50,15 +52,8 @@ MouseEvent(MouseID, x := 0, y := 0) {
     _guiVisible := true
     _gui_tick := 0
     _guiTriggered := true
-	;global hOutput
-	;static text := ""
-	;static LastTime := 0
  
-	;t := A_TickCount
-	;text := "x: " x ", y: " y (LastTime ? (", Delta Time: " t - LastTime " ms, MouseID: " MouseID) : "")
-    ;ToolTip, %text%
-    ;LastTime := 
-    
+    ;ToolTip, %MouseID%
 }
 
 $Space:: 
@@ -73,6 +68,7 @@ return
 
 $a:: 
     if(_guiVisible) {
+        _lbuttonDown := false
         Send, {LButton}
         if(_lockGui = false) {
             GoSub, HideGui 
@@ -82,9 +78,41 @@ $a::
     }
 return
 
+$y:: 
+    if(_guiVisible) {
+        if(_lbuttonDown = false) {
+            Send, {LButton Down}
+            Send, {RButton Up}
+            _lbuttonDown := true
+            _rbuttonDown := false
+        } else {
+            Send, {LButton Up}
+            _lbuttonDown := false
+        }
+    } else {
+        Send, {y}
+    }
+return
+
+$c:: 
+    if(_guiVisible) {
+        if(_rbuttonDown = false) {
+            Send, {LButton Up}
+            Send, {RButton Down}
+            _rbuttonDown := true
+            _lbuttonDown := false
+        } else {
+            Send, {RButton Up}
+            _rbuttonDown := false
+        }
+    } else {
+        Send, {c}
+    }
+return
 $s:: 
     if(_guiVisible) {
         Send, {MButton}
+        _lbuttonDown := false
         if(_lockGui = false) {
             GoSub, HideGui 
         }
@@ -96,6 +124,7 @@ return
 $d:: 
     if(_guiVisible) {
         Send, {RButton}
+        _lbuttonDown := false
         if(_lockGui = false) {
             GoSub, HideGui 
         }
@@ -157,6 +186,8 @@ HideGui:
     Settimer, GuiUpdateTimer, Off
     _guiVisible := false
     Gui, hide
+    _lbuttonDown := false
+    Send, {LButton Up}
 return
 
 UpdateGui:
@@ -169,6 +200,9 @@ UpdateGui:
         Gui, Color, Yellow
     } else {
         Gui, Color, Blue
+    }
+    if(_lbuttonDown) {
+        Gui, Color, Red
     }
     Gui, Show, NoActivate w%width% h%width%, MouseSpot
         

@@ -7,6 +7,8 @@ While the circle is visible you can press the following keys to trigger mouse ac
 a: left mouse click
 s: middle mouse click
 d: right mouse click
+q,w: mouse wheel up
+e,r: mouse wheel down
 
 Pressing f while the yellow circle is active will lock the mouse mode.
 The circle will turn blue and stays active. This indicates that the a,s and d keys will continue to work until you unlock the mouse mode again with f.

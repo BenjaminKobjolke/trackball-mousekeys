@@ -8,6 +8,7 @@ SetTitleMatchMode, 2
 SetWorkingDir %A_ScriptDir%
 ListLines Off
 SetBatchLines -1
+#InstallMouseHook
 
 
 if (!a_iscompiled) {

@@ -1,8 +1,9 @@
-#Requires AutoHotkey v1.1
+#Requires AutoHotkey v1
 #Include %A_ScriptDir%\config.ahk
-#InstallMouseHook
+#Include, %A_ScriptDir%/libraries/MouseDelta.ahk
 
 _guiVisible := false
+_guiTriggered := false
 _gui_tick := 0
 _lockGui := false
 
@@ -10,15 +11,55 @@ CoordMode, Mouse, Screen
 
 Gui, +ToolWindow +AlwaysOnTop -Caption -Border  +E0x20 
 
- 
-loop
-{
-    GoSub, CheckMousePosition
-    if(_guiVisible) {
-        GoSub, UpdateGui
-    }
-}
+md := new MouseDelta("MouseEvent")
+md.SetState(1)
+
+SetTimer, CheckMouseTimer, 10
+
 return
+
+CheckMouseTimer:
+    ;GoSub, CheckMousePosition
+    if(_guiTriggered) {
+        _guiTriggered := false
+        Settimer, GuiUpdateTimer, 100
+        GoSub, GuiUpdateTimer
+    }
+return
+
+GuiUpdateTimer:
+    if(_lockGui = false) {    
+        _gui_tick ++
+        if(_gui_tick > 30) {
+            GoSub, HideGui
+        }
+    }
+    GoSub, UpdateGui
+return
+; Gets called when mouse moves
+; x and y are DELTA moves (Amount moved since last message), NOT coordinates.
+MouseEvent(MouseID, x := 0, y := 0) {
+    if(MouseID = 0) {
+        ;ToolTip, nope
+        return
+    }
+    ;MsgBox, %MouseID% %x% %y%
+    global _guiVisible
+    global _gui_tick
+    global _guiTriggered
+    _guiVisible := true
+    _gui_tick := 0
+    _guiTriggered := true
+	;global hOutput
+	;static text := ""
+	;static LastTime := 0
+ 
+	;t := A_TickCount
+	;text := "x: " x ", y: " y (LastTime ? (", Delta Time: " t - LastTime " ms, MouseID: " MouseID) : "")
+    ;ToolTip, %text%
+    ;LastTime := 
+    
+}
 
 $Space:: 
     if(_guiVisible) {
@@ -75,12 +116,53 @@ $f::
     }
 return
 
+
+$q:: 
+    if(_guiVisible) {
+        Send, {WheelUp}
+        _gui_tick := 0
+    } else {
+        Send, {q}
+    }
+return
+
+$w:: 
+    if(_guiVisible) {
+        Send, {WheelUp}
+        _gui_tick := 0
+    } else {
+        Send, {w}
+    }
+return
+
+$e:: 
+    if(_guiVisible) {
+        Send, {WheelDown}
+        _gui_tick := 0
+    } else {
+        Send, {e}
+    }
+return
+
+$r:: 
+    if(_guiVisible) {
+        Send, {WheelDown}
+        _gui_tick := 0
+    } else {
+        Send, {r}
+    }
+return
+
 HideGui:
+    Settimer, GuiUpdateTimer, Off
     _guiVisible := false
     Gui, hide
 return
 
 UpdateGui:
+    if(_guiVisible = false) {
+        return
+    }
     width := 50
     if(_lockGui = false) {
         width := width - _gui_tick
@@ -98,30 +180,9 @@ UpdateGui:
     WinMove, MouseSpot,,  MX - offset, MY - offset
 return
 
-CheckMousePosition:
-    MouseGetPos, x1, y1  
-    Sleep, 10
-    MouseGetPos, x2, y2
-
-    If (x2 != x1 || y2 != y1) {
-        _gui_tick := 0
-        _guiVisible := true
-    } else {
-        if(_guiVisible) {
-            if(_lockGui = false) {
-              
-                _gui_tick ++
-                if(_gui_tick > 30) {
-                    GoSub, HideGui
-                }
-            }
-        }
-    }
-return
-
-
 if(!A_IsCompiled) {            
-    #y::                
+    #y::
+        Send, ^s                
         reload
     return             
 }
